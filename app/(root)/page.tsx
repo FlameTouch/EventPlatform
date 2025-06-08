@@ -1,8 +1,18 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { getAllEvents } from "@/lib/actions/event.actions";
+import Collection from "@/components/shared/Collection";
 
-export default function Home() {
+export default async function Home() {
+
+  const events = await getAllEvents({
+    query: '',
+    category: '',
+    page: 1,
+    limit: 6
+  })
+
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -11,7 +21,7 @@ export default function Home() {
             <h1 className="h1-bold">Host, Connect, Celebrate: Your Events, Our Platform!</h1>
             <p className="p-regular-20 md:p-regular-24">Book and learn helpful tips from 3,168+ mentors in world-class companies with our global comunity.</p>
             <Button size="lg" asChild className="button w-full sm:w-fit">
-              <Link href="#events">
+              <Link href="/#events">
                 Explore now
               </Link>
             </Button>
@@ -31,6 +41,17 @@ export default function Home() {
           Search
           CategoryFilter
         </div>
+
+          <Collection 
+            data={events?.data}
+            emptyTitle="No events found"
+            emptyStateSubtext="Come back later"
+            collectionType="All_Events"
+            limit={6}
+            page={1}
+            totalPages={2}
+          />
+        
       </section>
     </>
   );
