@@ -1,3 +1,4 @@
+import { PageProps } from '@/.next/types/app/layout';
 import CheckoutButton from '@/components/shared/CheckoutButton';
 import Collection from '@/components/shared/Collection';
 import { getEventById, getRelatedEventsByCategory } from '@/lib/actions/event.actions'
@@ -5,14 +6,22 @@ import { formatDateTime } from '@/lib/utils';
 import { SearchParamProps } from '@/types'
 import Image from 'next/image';
 
-const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) => {
+type EventDetailsProps = {
+  params: { id: string };
+  searchParams: { page?: string };
+};
+
+const EventDetails = async ({ params, searchParams }: EventDetailsProps) => {
+  const id = params.id;
+  const page = searchParams?.page || '1';
+
   const event = await getEventById(id);
 
   const relatedEvents = await getRelatedEventsByCategory({
     categoryId: event.category._id,
     eventId: event._id,
-    page: searchParams.page as string,
-  })
+    page: page,
+  });
 
   return (
     <>
