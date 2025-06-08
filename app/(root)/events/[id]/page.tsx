@@ -1,9 +1,7 @@
-import { PageProps } from '@/.next/types/app/layout';
 import CheckoutButton from '@/components/shared/CheckoutButton';
 import Collection from '@/components/shared/Collection';
 import { getEventById, getRelatedEventsByCategory } from '@/lib/actions/event.actions'
 import { formatDateTime } from '@/lib/utils';
-import { SearchParamProps } from '@/types'
 import Image from 'next/image';
 
 type EventDetailsProps = {
@@ -16,11 +14,10 @@ const EventDetails = async ({ params, searchParams }: EventDetailsProps) => {
   const page = searchParams?.page || '1';
 
   const event = await getEventById(id);
-
   const relatedEvents = await getRelatedEventsByCategory({
     categoryId: event.category._id,
     eventId: event._id,
-    page: page,
+    page,
   });
 
   return (
@@ -99,7 +96,7 @@ const EventDetails = async ({ params, searchParams }: EventDetailsProps) => {
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
           limit={3}
-          page={searchParams.page as string}
+          page={page}
           totalPages={relatedEvents?.totalPages}
         />
     </section>
