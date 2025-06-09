@@ -6,17 +6,20 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
-  params: { id: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const EventDetails = async ({ params, searchParams }: PageProps) => {
-  const id = params.id;
+  // Ждем параметры
+  const { id } = await params;
+
+  // Ждем searchParams
+  const sp = await searchParams;
 
   const event = await getEventById(id);
-  if (!event) return notFound();
 
-  const page = typeof searchParams?.page === 'string' ? searchParams.page : '1';
+  const page = typeof sp.page === 'string' ? sp.page : '1';
 
   const relatedEvents = await getRelatedEventsByCategory({
     categoryId: event.category._id,
@@ -99,7 +102,7 @@ const EventDetails = async ({ params, searchParams }: PageProps) => {
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
           limit={3}
-          page={page as string}
+          page={page}
           totalPages={relatedEvents?.totalPages}
         />
     </section>
