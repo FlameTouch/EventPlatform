@@ -11,10 +11,8 @@ interface PageProps {
 }
 
 const EventDetails = async ({ params, searchParams }: PageProps) => {
-  // Ждем параметры
-  const { id } = await params;
 
-  // Ждем searchParams
+  const { id } = await params;
   const sp = await searchParams;
 
   const event = await getEventById(id);
