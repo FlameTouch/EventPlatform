@@ -1,18 +1,28 @@
 import CheckoutButton from '@/components/shared/CheckoutButton';
 import Collection from '@/components/shared/Collection';
 import { getEventById, getRelatedEventsByCategory } from '@/lib/actions/event.actions'
-import { formatDateTime } from '@/lib/utils';
-import { SearchParamProps } from '@/types'
+import { formatDateTime } from '@/lib/utils'
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 
-const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) => {
+interface PageProps {
+  params: { id: string }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+const EventDetails = async ({ params, searchParams }: PageProps) => {
+  const id = params.id;
+
   const event = await getEventById(id);
+  if (!event) return notFound();
+
+  const page = typeof searchParams?.page === 'string' ? searchParams.page : '1';
 
   const relatedEvents = await getRelatedEventsByCategory({
     categoryId: event.category._id,
     eventId: event._id,
-    page: searchParams.page as string,
-  })
+    page,
+  });
 
   return (
     <>
@@ -89,7 +99,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
           limit={3}
-          page={searchParams.page as string}
+          page={page as string}
           totalPages={relatedEvents?.totalPages}
         />
     </section>
